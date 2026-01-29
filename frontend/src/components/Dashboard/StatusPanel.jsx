@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Activity, Droplets, Zap } from 'lucide-react';
+import { Settings, Activity, Droplets, Zap, X, Save } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const StatusPanel = ({ waterData, historyData }) => {
     // 1. State สำหรับนาฬิกา
     const [timeStr, setTimeStr] = useState('');
+
+    // --- ส่วนที่เพิ่มใหม่: State สำหรับควบคุมการเปิด/ปิด Popup ---
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -28,6 +31,110 @@ const StatusPanel = ({ waterData, historyData }) => {
 
     return (
         <div className="flex flex-col h-full bg-[#0B1121] text-white border-l border-gray-800 font-sans relative overflow-hidden select-none">
+
+            {/* --- ส่วนที่เพิ่มใหม่: UI ของ POPUP (Modal) --- */}
+            {isModalOpen && (
+                <div className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="bg-[#1F2937] w-full max-w-md rounded-2xl border border-gray-700 shadow-2xl overflow-hidden">
+                        {/* Header ของ Popup */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800/50">
+                            <div className="flex items-center gap-2">
+                                <Settings size={18} className="text-blue-400" />
+                                <h3 className="font-bold text-gray-100">ตั้งค่าเกณฑ์ควบคุม (LOGO! PLC)</h3>
+                            </div>
+                            <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Body ของ Popup - ปรับให้ Diff กว้างเท่าด้านบน และแยกบรรทัดเวลา */}
+                        <div className="p-6 space-y-6 text-left">
+
+                            {/* 1. Start Setting */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold text-green-400 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]" />
+                                    ระดับน้ำถนนเริ่มทำงาน (Start)
+                                </label>
+                                <div className="flex gap-2">
+                                    <input type="number" defaultValue="500" className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 font-mono transition-all" />
+                                    <button className="w-24 bg-green-600 hover:bg-green-500 active:scale-95 rounded-xl text-sm font-bold transition-all shadow-lg shadow-green-900/20 text-white">บันทึก</button>
+                                </div>
+                                <p className="text-[10px] text-gray-500 italic px-1">ค่าระดับน้ำที่สั่งให้ประตูน้ำเริ่มเปิดทำงาน</p>
+                            </div>
+
+                            {/* 2. Stop Setting */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold text-red-400 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]" />
+                                    ระดับน้ำถนนหยุดทำงาน (Stop)
+                                </label>
+                                <div className="flex gap-2">
+                                    <input type="number" defaultValue="100" className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-red-500/50 font-mono transition-all" />
+                                    <button className="w-24 bg-red-600 hover:bg-red-500 active:scale-95 rounded-xl text-sm font-bold transition-all shadow-lg shadow-red-900/20 text-white">บันทึก</button>
+                                </div>
+                                <p className="text-[10px] text-gray-500 italic px-1">ค่าระดับน้ำที่สั่งให้ประตูน้ำหยุดทำงาน</p>
+                            </div>
+
+                            {/* 3. Diff Setting - ปรับ flex-1 เพื่อให้กว้างเท่ากับ 2 ช่องด้านบน */}
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold text-blue-400 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
+                                    เกณฑ์ผลต่างระดับน้ำ (Diff)
+                                </label>
+                                <div className="flex gap-2">
+                                    <input type="number" defaultValue="50" className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-mono transition-all" />
+                                    <button className="w-24 bg-blue-600 hover:bg-blue-500 active:scale-95 rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-900/20 text-white">บันทึก</button>
+                                </div>
+                                <p className="text-[10px] text-gray-500 italic px-1">ต้องมีความต่างมากกว่าค่านี้ ประตูน้ำถึงจะทำงาน</p>
+                            </div>
+
+                            {/* 4. Close Time Setting - ย้ายมาบรรทัดใหม่และจัดระเบียบช่องตัวเลข */}
+                            <div className="space-y-2 pt-2 border-t border-gray-800">
+                                <label className="text-sm font-semibold text-gray-400 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-gray-500" />
+                                    เวลาปิดประตูน้ำ (Close Time)
+                                </label>
+                                <div className="flex gap-2 items-center">
+                                    <div className="flex-1 flex gap-2 items-center bg-gray-900 border border-gray-700 rounded-xl px-4 py-1">
+                                        <input type="number" defaultValue="2" className="w-full bg-transparent py-2 text-center font-mono text-white outline-none" />
+                                        <span className="text-gray-600 font-bold">:</span>
+                                        <input type="number" defaultValue="30" className="w-full bg-transparent py-2 text-center font-mono text-white outline-none" />
+                                    </div>
+                                    <button className="w-24 bg-gray-700 hover:bg-gray-600 active:scale-95 rounded-xl py-2.5 text-sm font-bold transition-all text-white">บันทึก</button>
+                                </div>
+                                <p className="text-[10px] text-gray-500 italic px-1">ระบุเวลา (นาที : วินาที) ที่ต้องการปิดประตู</p>
+                            </div>
+
+                            <div className="space-y-2 pt-2 border-t border-gray-800">
+                                <label className="text-sm font-semibold text-gray-400 flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-gray-500" />
+                                    เวลาเปิดประตูน้ำ (Open Time)
+                                </label>
+                                <div className="flex gap-2 items-center">
+                                    <div className="flex-1 flex gap-2 items-center bg-gray-900 border border-gray-700 rounded-xl px-4 py-1">
+                                        <input type="number" defaultValue="2" className="w-full bg-transparent py-2 text-center font-mono text-white outline-none" />
+                                        <span className="text-gray-600 font-bold">:</span>
+                                        <input type="number" defaultValue="30" className="w-full bg-transparent py-2 text-center font-mono text-white outline-none" />
+                                    </div>
+                                    <button className="w-24 bg-gray-700 hover:bg-gray-600 active:scale-95 rounded-xl py-2.5 text-sm font-bold transition-all text-white">บันทึก</button>
+                                </div>
+                                <p className="text-[10px] text-gray-500 italic px-1">ระบุเวลา (นาที : วินาที) ที่ต้องการปิดประตู</p>
+                            </div>
+                        </div>
+
+                        {/* Footer ของ Popup */}
+                        <div className="p-4 bg-gray-800/30 border-t border-gray-700 flex justify-end">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold text-sm transition-all active:scale-95 shadow-lg shadow-blue-900/40"
+                            >
+                                ตกลง / ปิดหน้าต่าง
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Background Effect (แสงพื้นหลังจางๆ) */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-900/10 blur-[100px] pointer-events-none" />
@@ -87,9 +194,10 @@ const StatusPanel = ({ waterData, historyData }) => {
 
                 {/* === CARD 2: CANAL WATER LEVEL === */}
                 <div className="bg-gray-800/40 rounded-2xl p-5 border border-white/5 hover:border-cyan-500/30 transition-all duration-300 group shadow-lg relative">
+                    {/* เปลี่ยนจาก alert เป็น setIsModalOpen(true) */}
                     <button
                         className="absolute top-4 right-4 p-2 text-gray-600 hover:text-white hover:bg-white/10 rounded-lg transition-all"
-                        onClick={() => alert("Settings")}
+                        onClick={() => setIsModalOpen(true)}
                     >
                         <Settings size={18} />
                     </button>
@@ -157,7 +265,7 @@ const StatusPanel = ({ waterData, historyData }) => {
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
                                 <XAxis dataKey="time" stroke="#6b7280" fontSize={10} tickLine={false} axisLine={false} dy={10} />
-                                <YAxis stroke="#6b7280" fontSize={10} domain={[0, 100]} tickLine={false} axisLine={false} tickFormatter={(value) => Number(value).toFixed(1)}/>
+                                <YAxis stroke="#6b7280" fontSize={10} domain={[0, 100]} tickLine={false} axisLine={false} tickFormatter={(value) => Number(value).toFixed(1)} />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)' }}
                                     itemStyle={{ color: '#e5e7eb', fontSize: '12px', fontWeight: 'bold' }}

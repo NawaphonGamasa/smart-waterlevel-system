@@ -55,7 +55,7 @@ const Dashboard = () => {
       </div>
 
       {/* ส่วนที่ 2: แถบสถานะ (ขวา) */}
-      <div className="w-[350px] flex-shrink-0 bg-gray-800 border-l border-gray-700 shadow-2xl z-10 flex flex-col">
+      <div className="w-[25%] flex-shrink-0 bg-gray-800 border-l border-gray-700 shadow-2xl z-10 flex flex-col">
         <StatusPanel 
             waterData={waterData} 
             historyData={historyData}
