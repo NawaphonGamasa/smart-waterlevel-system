@@ -1,0 +1,34 @@
+import axios from 'axios';
+
+const API_BASE_URL = 'http://localhost:3000/api';
+
+const api = axios.create({
+    baseURL: API_BASE_URL,
+    timeout: 10000, // ถ้าเกิน 10 วิให้ตัด Connection (กันหน้าเว็บค้าง)
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// 1. ดึงข้อมูล Dashboard ทั้งหมด (ค่าปัจจุบัน + กราฟ + Setting)
+export const getDashboardData = async () => {
+    try {
+        const response = await api.get('/dashboard');
+        return response.data;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+};
+
+// 2. สั่งเปิด/ปิดประตู (Command: 'OPEN', 'CLOSE', 'AUTO')
+export const sendGateCommand = async (command) => {
+    return await api.post('/control/gate', { command });
+};
+
+// 3. บันทึกค่า Setting (Start, Stop, Time, etc.)
+export const saveSettings = async (settings) => {
+    return await api.post('/control/settings', settings);
+};
+
+export default api;
