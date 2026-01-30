@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Activity, Droplets, Zap, X } from 'lucide-react';
+import { Settings, Activity, Droplets, Zap, X, Maximize2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { saveSettings } from '../../services/api'; // ตรวจสอบ path ว่าถูกต้อง
 
@@ -11,6 +11,7 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
 
     // 2. State Popup และ Form
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isChartModalOpen, setIsChartModalOpen] = useState(false);
     const [formData, setFormData] = useState({
         start_val: 0, stop_val: 0, diff_val: 0,
         open_min: 0, open_sec: 0,
@@ -70,10 +71,10 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
             };
 
             await saveSettings(payload);
-            
+
             alert('บันทึกข้อมูลเรียบร้อยแล้ว!');
             setIsModalOpen(true);
-            
+
             // สั่งโหลดข้อมูลใหม่ (ถ้ามีฟังก์ชันส่งมา)
             if (onRefresh) onRefresh();
 
@@ -219,7 +220,18 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                 </div>
 
                 {/* CHART */}
-                <div className="bg-gray-800/40 rounded-2xl p-4 border border-white/5 h-64 flex flex-col shadow-inner">
+                {/* 1. (แก้ไข) เพิ่ม relative group ที่บรรทัดนี้ */}
+                <div className="bg-gray-800/40 rounded-2xl p-4 border border-white/5 h-64 flex flex-col shadow-inner relative group">
+
+                    {/* 2. (เพิ่ม) ปุ่มสำหรับกดขยาย */}
+                    <button
+                        onClick={() => setIsChartModalOpen(true)}
+                        className="absolute top-4 right-4 p-1.5 bg-gray-700/50 hover:bg-blue-600 text-gray-400 hover:text-white rounded-lg transition-all opacity-0 group-hover:opacity-100 z-20"
+                        title="ดูแบบเต็มจอ"
+                    >
+                        <Maximize2 size={16} />
+                    </button>
+
                     <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2"><Activity size={14} /> Real-time Trend (20 Log)</h3>
                     <div className="flex-1 w-full min-h-0">
                         <ResponsiveContainer width="100%" height="100%">
@@ -239,6 +251,38 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                     </div>
                 </div>
             </div>
+            {/* --- (ส่วนที่แทรกเพิ่ม) POPUP GRAHP MODAL --- */}
+            {isChartModalOpen && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-[#1F2937] w-[95vw] h-[85vh] rounded-2xl border border-gray-700 shadow-2xl overflow-hidden flex flex-col">
+                        <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800/50">
+                            <div className="flex items-center gap-2">
+                                <Activity size={24} className="text-blue-400" />
+                                <h3 className="text-xl font-bold text-gray-100">Real-time Trend (Expanded View)</h3>
+                            </div>
+                            <button onClick={() => setIsChartModalOpen(false)} className="p-2 hover:bg-gray-700 rounded-full text-gray-400 hover:text-white transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className="flex-1 p-6 bg-[#0B1121]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={chartData}>
+                                    <defs>
+                                        <linearGradient id="colorRoadBig" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} /><stop offset="95%" stopColor="#3b82f6" stopOpacity={0} /></linearGradient>
+                                        <linearGradient id="colorCanalBig" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#ffffff" stopOpacity={0.2} /><stop offset="95%" stopColor="#ffffff" stopOpacity={0} /></linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={true} />
+                                    <XAxis dataKey="time" stroke="#6b7280" fontSize={14} tickLine={false} axisLine={false} dy={10} />
+                                    <YAxis stroke="#6b7280" fontSize={14} domain={[0, 100]} tickLine={false} axisLine={false} tickFormatter={(value) => Number(value).toFixed(0)} />
+                                    <Tooltip contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '12px', fontSize: '14px' }} />
+                                    <Area type="monotone" dataKey="road" name="Road" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorRoadBig)" />
+                                    <Area type="monotone" dataKey="canal" name="Canal" stroke="#94a3b8" strokeWidth={2} strokeDasharray="4 4" fillOpacity={1} fill="url(#colorCanalBig)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
