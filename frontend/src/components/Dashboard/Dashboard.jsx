@@ -12,7 +12,7 @@ const STATION_POSITIONS = {
 
 const Dashboard = () => {
   // เรียกใช้ Hook
-  const { waterData, historyData, isConnected, isLoading } = useRealtime();
+  const { waterData, historyData, isConnected, isLoading, settings, fetchData } = useRealtime();
 
   // ถ้ากำลังโหลดข้อมูล ให้แสดงหน้า Loading สวยๆ
   if (isLoading) return <Loading />;
@@ -21,7 +21,7 @@ const Dashboard = () => {
     {
       id: 1,
       name: 'Station 1: Road Side',
-      status: waterData.road_val <= 0 ? 'fault' : 'normal', 
+      status: waterData.road_val <= 0 ? 'fault' : 'normal',
       val: waterData.road_val,
       position: STATION_POSITIONS.ROAD,
       lastUpdate: waterData.log_time,
@@ -40,25 +40,27 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900 text-white overflow-hidden font-sans">
-      
+
       {/* ส่วนที่ 1: พื้นที่แผนที่ (ซ้าย) */}
       <div className="flex-1 relative z-0">
         <MapContainer stations={stations} />
-        
+
         {/* Connection Status Label */}
         <div className="absolute top-4 left-11 z-[400] bg-black/60 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold flex items-center gap-3 border border-white/10 shadow-lg select-none">
-            <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse' : 'bg-red-500'}`}></div>
-            <span className={isConnected ? 'text-green-400' : 'text-red-400'}>
-              {isConnected ? 'SYSTEM ONLINE' : 'DISCONNECTED'}
-            </span>
+          <div className={`w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse' : 'bg-red-500'}`}></div>
+          <span className={isConnected ? 'text-green-400' : 'text-red-400'}>
+            {isConnected ? 'SYSTEM ONLINE' : 'DISCONNECTED'}
+          </span>
         </div>
       </div>
 
       {/* ส่วนที่ 2: แถบสถานะ (ขวา) */}
       <div className="w-[25%] flex-shrink-0 bg-gray-800 border-l border-gray-700 shadow-2xl z-10 flex flex-col">
-        <StatusPanel 
-            waterData={waterData} 
-            historyData={historyData}
+        <StatusPanel
+          waterData={waterData}
+          historyData={historyData}
+          settings={settings}           // <-- เพิ่มบรรทัดนี้
+          onRefresh={fetchData}         // <-- เพิ่มบรรทัดนี้ (เพื่อให้กดบันทึกแล้วหน้าเว็บอัปเดต)
         />
       </div>
 

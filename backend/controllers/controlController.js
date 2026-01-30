@@ -11,25 +11,46 @@ exports.toggleGate = (req, res) => {
     res.json({ status: 'success', message: `Sent command: ${command}` });
 };
 
-// อัปเดตค่า Setting (เพิ่ม Time)
+// backend/controllers/controlController.js
+
 exports.updateSettings = async (req, res) => {
-    // รับค่าทั้งหมดจากหน้าเว็บ
+    // 1. รับค่าจากหน้าเว็บ
     const { start_val, stop_val, diff_val, open_time_val, close_time_val } = req.body;
 
+    // --- ส่วนที่เพิ่ม: ฟังก์ชันแปลง "นาที:วินาที" ให้เป็น "วินาที" (เช่น "2:30" -> 150) ---
+    const toSeconds = (val) => {
+        const str = String(val);
+        if (str.includes(':')) {
+            const parts = str.split(':');
+            const min = parseInt(parts[0]) || 0;
+            const sec = parseInt(parts[1]) || 0;
+            return (min * 60) + sec;
+        }
+        return Number(val); // ถ้าเป็นตัวเลขอยู่แล้ว ก็ใช้เลย
+    };
+
+    // แปลงค่าเวลาก่อนใช้งาน
+    const openSeconds = toSeconds(open_time_val);
+    const closeSeconds = toSeconds(close_time_val);
+    // -----------------------------------------------------------------------
+
     try {
-        // 1. อัปเดตลง Database
+        // 2. อัปเดตลง Database (ส่งเป็นวินาทีล้วนๆ ไปเก็บ)
         await SettingModel.updateSettings({
-            start_val, stop_val, diff_val, open_time_val, close_time_val
+            start_val, 
+            stop_val, 
+            diff_val, 
+            open_time_val: openSeconds,  // เก็บ 150
+            close_time_val: closeSeconds // เก็บ 150
         });
 
-        // 2. ส่ง MQTT ไป Node-RED
-        // (ส่ง Key ให้ตรงกับที่เขียนใน Function 4 ของ Node-RED: start, stop, diff, open_time, close_time)
+        // 3. ส่ง MQTT ไป Node-RED (ส่งเป็นวินาทีล้วนๆ ไปเหมือนกัน)
         mqttService.sendCommand('water/control/settings', {
             start: start_val,
             stop: stop_val,
             diff: diff_val,
-            open_time: open_time_val,
-            close_time: close_time_val
+            open_time: openSeconds,  // ส่ง 150
+            close_time: closeSeconds // ส่ง 150
         });
 
         res.json({ status: 'success', message: 'Settings updated' });
