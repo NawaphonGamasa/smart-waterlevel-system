@@ -14,25 +14,34 @@ const useRealtime = () => {
   const [historyData, setHistoryData] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // 1. State สำหรับเก็บค่า Setting
+  const [settings, setSettings] = useState(null);
 
-  useEffect(() => {
-    // 1. ดึงข้อมูลครั้งแรกจาก API (Initial Fetch)
-    const initData = async () => {
+  // 2. ย้ายฟังก์ชันดึงข้อมูลออกมาข้างนอก useEffect และเปลี่ยนชื่อเป็น fetchData
+  // เพื่อให้ Component อื่น (เช่น ปุ่มบันทึก) สามารถเรียกใช้เพื่อ Refresh ข้อมูลได้
+  const fetchData = async () => {
       try {
         const res = await getDashboardData();
         if (res.data) {
             if (res.data.current) setWaterData(prev => ({ ...prev, ...res.data.current }));
             if (res.data.history) setHistoryData(res.data.history);
+            
+            // ✅ เพิ่มบรรทัดนี้: บันทึกค่า Settings ที่ได้จาก Database
+            if (res.data.settings) setSettings(res.data.settings); 
         }
       } catch (err) {
-        console.error("❌ Init Data Failed:", err);
+        console.error("❌ Fetch Data Failed:", err);
       } finally {
         setIsLoading(false);
       }
-    };
-    initData();
+  };
 
-    // 2. เชื่อมต่อ Socket และรอฟังสถานะจริง
+  useEffect(() => {
+    // เรียกใช้ฟังก์ชันดึงข้อมูลครั้งแรก
+    fetchData();
+
+    // เชื่อมต่อ Socket และรอฟังสถานะจริง
     socketService.connect();
 
     // ฟังก์ชันเปลี่ยนสถานะเมื่อต่อติด หรือหลุด
@@ -43,7 +52,7 @@ const useRealtime = () => {
     socketService.subscribe('connect', onConnect);
     socketService.subscribe('disconnect', onDisconnect);
 
-    // 3. รอรับข้อมูล Real-time
+    // รอรับข้อมูล Real-time
     const handleUpdate = (newData) => {
       setWaterData(prev => ({ ...prev, ...newData }));
       
@@ -61,14 +70,15 @@ const useRealtime = () => {
     // Cleanup: ตัดการเชื่อมต่อและเอา Listener ออกเมื่อเปลี่ยนหน้า
     return () => {
       socketService.unsubscribe('water-update');
-      socketService.unsubscribe('connect');    // ยกเลิกการฟัง connect
-      socketService.unsubscribe('disconnect'); // ยกเลิกการฟัง disconnect
+      socketService.unsubscribe('connect');    
+      socketService.unsubscribe('disconnect'); 
       socketService.disconnect();
       setIsConnected(false);
     };
   }, []);
 
-  return { waterData, historyData, isConnected, isLoading };
+  // 3. ✅ ส่ง settings และ fetchData ออกไปให้คนอื่นใช้
+  return { waterData, historyData, isConnected, isLoading, settings, fetchData };
 };
 
 export default useRealtime;

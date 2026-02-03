@@ -13,9 +13,9 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isChartModalOpen, setIsChartModalOpen] = useState(false);
     const [formData, setFormData] = useState({
-        start_val: 0, stop_val: 0, diff_val: 0,
-        open_min: 0, open_sec: 0,
-        close_min: 0, close_sec: 0
+        start_val: 500, stop_val: 100, diff_val: 50,
+        open_min: 2, open_sec: 30,
+        close_min: 2, close_sec: 30
     });
 
     // --- Effect: เดินนาฬิกา ---
@@ -35,9 +35,14 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
     useEffect(() => {
         // เช็คว่ามี settings ส่งมาจริงไหม และ popup เปิดอยู่ไหม
         if (settings && isModalOpen) {
-            const parseTime = (str) => {
-                const parts = String(str || "0:0").split(':');
-                return { m: parseInt(parts[0]) || 0, s: parseInt(parts[1]) || 0 };
+
+            // ✅ แก้ไข: เปลี่ยน Logic เป็นการหารตัวเลข (วินาที -> นาที)
+            const parseTime = (totalSeconds) => {
+                const sec = Number(totalSeconds) || 0; // แปลงค่าเป็นตัวเลขให้ชัวร์
+                return {
+                    m: Math.floor(sec / 60), // หาร 60 เพื่อเอานาที
+                    s: sec % 60              // หารเอาเศษ เพื่อเอาวินาที
+                };
             };
 
             const openT = parseTime(settings.open_time_val);
@@ -47,8 +52,10 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                 start_val: settings.start_val || 0,
                 stop_val: settings.stop_val || 0,
                 diff_val: settings.diff_val || 0,
-                open_min: openT.m, open_sec: openT.s,
-                close_min: closeT.m, close_sec: closeT.s
+                open_min: openT.m,
+                open_sec: openT.s,
+                close_min: closeT.m,
+                close_sec: closeT.s
             });
         }
     }, [settings, isModalOpen]);
