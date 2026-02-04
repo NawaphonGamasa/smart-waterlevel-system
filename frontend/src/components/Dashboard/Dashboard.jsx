@@ -25,7 +25,7 @@ const Dashboard = () => {
       val: waterData.road_val,
       position: STATION_POSITIONS.ROAD,
       lastUpdate: waterData.log_time,
-      camUrl: 'https://images.unsplash.com/photo-1594911772125-07fc7a2d8d9f' // ใส่ URL กล้อง
+      camUrl: '' // ใส่ URL กล้อง
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ const Dashboard = () => {
       val: waterData.canal_val,
       position: STATION_POSITIONS.CANAL,
       lastUpdate: waterData.log_time,
-      camUrl: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0'
+      camUrl: ''
     }
   ];
 

@@ -197,7 +197,7 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                 <div className="bg-gray-800/40 rounded-2xl p-5 border border-white/5 hover:border-blue-500/30 transition-all duration-300 group shadow-lg">
                     <div className="flex justify-between items-start mb-4">
                         <div className="flex items-center gap-3"><div className="p-2 bg-blue-500/10 rounded-lg text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-500/20"><Droplets size={20} /></div><h2 className="text-lg font-bold text-gray-200 tracking-wide">Road Water Level</h2></div>
-                        <div className={`px-3 py-1 rounded-full text-[10px] font-bold border tracking-wider ${safeWater.road_val > 0 ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>{safeWater.road_val > 0 ? 'NORMAL' : 'FAULT'}</div>
+                        <div className={`whitespace-nowrap w-fit h-fit px-3 py-1 rounded-full text-[10px] font-bold border tracking-wider ${safeWater.road_val > 0 ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>{safeWater.road_val > 0 ? 'NORMAL' : 'FAULT'}</div>
                     </div>
                     <div className="flex items-end justify-between">
                         <div><span className="text-gray-500 text-[10px] uppercase tracking-widest font-semibold">Sensor Value</span><div className="text-5xl font-mono font-bold text-white mt-1 tracking-tighter drop-shadow-lg">{safeWater.road_val.toFixed(1)}<span className="text-xl text-gray-500 ml-1 font-sans">%</span></div></div>
@@ -208,20 +208,26 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                 {/* CARD 2 (With Setting Button) */}
                 <div className="bg-gray-800/40 rounded-2xl p-5 border border-white/5 hover:border-cyan-500/30 transition-all duration-300 group shadow-lg relative">
                     <button className="absolute top-4 right-4 p-2 text-gray-600 hover:text-white hover:bg-white/10 rounded-lg transition-all" onClick={() => setIsModalOpen(true)}><Settings size={18} /></button>
-                    <div className="flex items-center gap-3 mb-6"><div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 group-hover:text-cyan-300 group-hover:bg-cyan-500/20"><Droplets size={20} /></div><h2 className="text-lg font-bold text-gray-200 tracking-wide">Canal Water Level</h2></div>
+                    <div className="flex justify-between items-start mb-4 pr-10">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 group-hover:text-cyan-300 group-hover:bg-cyan-500/20"><Droplets size={20} /></div>
+                            <h2 className="text-lg font-bold text-gray-200 tracking-wide">Canal Water Level</h2>
+                        </div>
+                        <div className={`whitespace-nowrap w-fit h-fit px-3 py-1 rounded-full text-[10px] font-bold border tracking-wider ${safeWater.canal_val > 0 ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>{safeWater.canal_val > 0 ? 'NORMAL' : 'FAULT'}</div>
+                    </div>
                     <div className="flex items-end justify-between mb-6 pb-6 border-b border-white/5">
                         <div><span className="text-gray-500 text-[10px] uppercase tracking-widest font-semibold">Sensor Value</span><div className="text-5xl font-mono font-bold text-white mt-1 tracking-tighter drop-shadow-lg">{safeWater.canal_val.toFixed(1)}<span className="text-xl text-gray-500 ml-1 font-sans">%</span></div></div>
                         <div className="flex flex-col items-end gap-1 mb-1"><div className={`w-3 h-3 rounded-full transition-all duration-500 ${safeWater.canal_val > 0 ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' : 'bg-red-500 shadow-[0_0_15px_#ef4444] animate-pulse'}`}></div><span className="text-[10px] text-gray-500 font-bold uppercase">Reading / Fault</span></div>
                     </div>
                     {/* Gate Status */}
                     <div className="grid grid-cols-2 gap-3">
-                        <div className={`p-3 rounded-xl border flex items-center justify-between transition-all ${safeWater.q1_status === 1 ? 'bg-green-500 border-green-500/30' : 'bg-gray-900/50 border-white/5'}`}>
-                            <div className="flex items-center gap-2"><Zap size={14} className={safeWater.q1_status === 1 ? 'text-red-400' : 'text-gray-600'} /><span className={`text-[10px] font-bold uppercase tracking-wider ${safeWater.q1_status === 1 ? 'text-red-100' : 'text-gray-500'}`}>Gate Open</span></div>
+                        <div className={`p-3 rounded-xl border flex items-center justify-between transition-all ${safeWater.q1_status === 1 ? 'bg-green-700 border-green-500/30' : 'bg-gray-900/50 border-white/5'}`}>
+                            <div className="flex items-center gap-2"><Zap size={14} className={safeWater.q1_status === 1 ? 'text-green-400' : 'text-gray-600'} /><span className={`text-[10px] font-bold uppercase tracking-wider ${safeWater.q1_status === 1 ? 'text-green-100' : 'text-gray-500'}`}>Gate Open</span></div>
                             <div className={`w-3 h-3 rounded-full border-2 border-gray-800 transition-all duration-300 ${safeWater.q1_status === 1 ? 'bg-red-500 shadow-[0_0_10px_#ef4444]' : 'bg-gray-700'}`}></div>
                         </div>
-                        <div className={`p-3 rounded-xl border flex items-center justify-between transition-all ${safeWater.q2_status === 1 ? 'bg-green-500/10 border-green-500/30' : 'bg-gray-900/50 border-white/5'}`}>
+                        <div className={`p-3 rounded-xl border flex items-center justify-between transition-all ${safeWater.q2_status === 1 ? 'bg-green-700 border-green-500/30' : 'bg-gray-900/50 border-white/5'}`}>
                             <div className="flex items-center gap-2"><Zap size={14} className={safeWater.q2_status === 1 ? 'text-green-400' : 'text-gray-600'} /><span className={`text-[10px] font-bold uppercase tracking-wider ${safeWater.q2_status === 1 ? 'text-green-100' : 'text-gray-500'}`}>Gate Close</span></div>
-                            <div className={`w-3 h-3 rounded-full border-2 border-gray-800 transition-all duration-300 ${safeWater.q2_status === 1 ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-gray-700'}`}></div>
+                            <div className={`w-3 h-3 rounded-full border-2 border-gray-800 transition-all duration-300 ${safeWater.q2_status === 1 ? 'bg-red-500 shadow-[0_0_10px_#ef4444]' : 'bg-gray-700'}`}></div>
                         </div>
                     </div>
                 </div>
