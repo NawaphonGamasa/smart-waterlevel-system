@@ -95,8 +95,8 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
     // เพิ่มการดัก Array ว่าง ([]) เพื่อป้องกัน error ตอนเริ่มโหลด
     const chartData = (historyData || []).slice().reverse().map(item => ({
         time: new Date(item.log_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
-        road: item.road_val,
-        canal: item.canal_val
+        road: item.road_val.toFixed(1),
+        canal: item.canal_val.toFixed(1)
     }));
 
     // ดัก Error กรณี waterData ยังไม่มา

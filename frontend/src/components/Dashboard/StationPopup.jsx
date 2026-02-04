@@ -39,7 +39,7 @@ const StationPopup = ({ data }) => {
             <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Water Level</p>
             <div className="flex items-baseline gap-1">
               <span className={`text-5xl font-black ${isNormal ? 'text-blue-400' : 'text-red-500'}`}>
-                {data.val}
+                {data.val.toFixed(1)}
               </span>
               <span className="text-lg text-gray-500 font-medium">%</span>
             </div>
