@@ -30,5 +30,15 @@ export const sendGateCommand = async (command) => {
 export const saveSettings = async (settings) => {
     return await api.post('/control/settings', settings);
 };
-
+// 4. ดึงรายงานสรุประดับน้ำรายวัน (เพิ่มส่วนนี้)
+export const getDailyReport = async (startDate, endDate) => {
+    try {
+        // ส่ง query param: ?start=2023-10-01&end=2023-10-03
+        const response = await api.get(`/report?start=${startDate}&end=${endDate}`);
+        return response.data;
+    } catch (error) {
+        console.error('API Report Error:', error);
+        throw error;
+    }
+};
 export default api;

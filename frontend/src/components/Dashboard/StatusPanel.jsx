@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Activity, Droplets, Zap, X, Maximize2 } from 'lucide-react';
+import { Settings, Activity, Droplets, Zap, X, Maximize2, FileText, Calendar } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { saveSettings } from '../../services/api'; // ตรวจสอบ path ว่าถูกต้อง
+import { saveSettings, getDailyReport } from '../../services/api'; // ตรวจสอบ path ว่าถูกต้อง
 
 // แก้ไขบรรทัดนี้: รับ Props แยกกันตามโครงสร้างเดิมของคุณ + เพิ่ม settings และ onRefresh
 const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
@@ -17,7 +17,41 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
         open_min: 2, open_sec: 30,
         close_min: 2, close_sec: 30
     });
+    // --- [แก้ไขจุดนี้] State สำหรับช่วงวันที่ ---
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]); // วันเริ่ม
+    const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);     // วันสิ้นสุด
+    const [reportData, setReportData] = useState([]);
+    const [reportSummary, setReportSummary] = useState({ avg_road: 0, avg_canal: 0, total_records: 0 });
+    const [isLoadingReport, setIsLoadingReport] = useState(false);
 
+    // --- [แก้ไขจุดนี้] ฟังก์ชันดึงข้อมูลแบบส่ง 2 ค่า ---
+    const fetchReport = async () => {
+        setIsLoadingReport(true);
+        try {
+            // ส่งทั้ง startDate และ endDate
+            const result = await getDailyReport(startDate, endDate);
+
+            if (result.status === 'success') {
+                setReportData(result.data);
+                setReportSummary(result.summary);
+            } else {
+                setReportData([]);
+            }
+        } catch (error) {
+            console.error(error);
+            setReportData([]);
+        } finally {
+            setIsLoadingReport(false);
+        }
+    };
+
+    // โหลดข้อมูลเมื่อเปิด Modal หรือเปลี่ยนวันที่ใดวันที่หนึ่ง
+    useEffect(() => {
+        if (isReportModalOpen) {
+            fetchReport();
+        }
+    }, [isReportModalOpen, startDate, endDate]);
     // --- Effect: เดินนาฬิกา ---
     useEffect(() => {
         const timer = setInterval(() => {
@@ -104,7 +138,92 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
 
     return (
         <div className="flex flex-col h-full bg-[#0B1121] text-white border-l border-gray-800 font-sans relative overflow-hidden select-none">
+            {/* --- REPORT MODAL --- */}
+            {isReportModalOpen && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in zoom-in duration-200">
+                    <div className="bg-[#1F2937] w-full max-w-4xl h-[80vh] rounded-2xl border border-gray-700 shadow-2xl overflow-hidden flex flex-col">
 
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800/50">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-purple-500/10 rounded-lg"><FileText size={24} className="text-purple-400" /></div>
+                                <div><h3 className="text-xl font-bold text-gray-100">รายงานสรุปช่วงเวลา</h3></div>
+                            </div>
+
+                            {/* [แก้ไขจุดนี้] ส่วนเลือกวันที่ 2 ช่อง */}
+                            <div className="flex items-center gap-2 bg-gray-900 px-3 py-1.5 rounded-lg border border-gray-700">
+                                <span className="text-xs text-gray-500 font-bold">FROM</span>
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="bg-transparent text-white text-sm focus:outline-none font-mono"
+                                />
+                                <span className="text-gray-600">|</span>
+                                <span className="text-xs text-gray-500 font-bold">TO</span>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="bg-transparent text-white text-sm focus:outline-none font-mono"
+                                />
+                            </div>
+
+                            <button onClick={() => setIsReportModalOpen(false)} className="ml-4 p-2 hover:bg-gray-700 rounded-full text-gray-400 hover:text-white"><X size={24} /></button>
+                        </div>
+
+                        {/* Body (ตารางข้อมูล) */}
+                        <div className="flex-1 overflow-hidden flex flex-col p-6 gap-6">
+                            {/* Summary Cards */}
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
+                                    <p className="text-xs text-gray-400 uppercase">Total Records</p>
+                                    <p className="text-2xl font-mono font-bold text-white mt-1">{reportSummary.total_records}</p>
+                                </div>
+                                <div className="bg-blue-900/20 p-4 rounded-xl border border-blue-500/30">
+                                    <p className="text-xs text-blue-300 uppercase">Avg Road Level</p>
+                                    <p className="text-2xl font-mono font-bold text-blue-400 mt-1">{reportSummary.avg_road}%</p>
+                                </div>
+                                <div className="bg-cyan-900/20 p-4 rounded-xl border border-cyan-500/30">
+                                    <p className="text-xs text-cyan-300 uppercase">Avg Canal Level</p>
+                                    <p className="text-2xl font-mono font-bold text-cyan-400 mt-1">{reportSummary.avg_canal}%</p>
+                                </div>
+                            </div>
+
+                            {/* Table */}
+                            <div className="flex-1 bg-gray-900/50 rounded-xl border border-gray-700 overflow-hidden flex flex-col">
+                                <div className="grid grid-cols-5 bg-gray-800 p-3 text-sm font-bold text-gray-300 border-b border-gray-700">
+                                    <div>Date/Time</div>
+                                    <div className="text-center">Road (%)</div>
+                                    <div className="text-center">Canal (%)</div>
+                                    <div className="text-right">Gate Open Status</div>
+                                    <div className="text-right">Gate Close Status</div>
+                                </div>
+                                <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+                                    {isLoadingReport ? <div className="text-center py-10 text-gray-500 animate-pulse">Loading...</div> :
+                                        reportData.length === 0 ? <div className="text-center py-10 text-gray-500">No data found</div> :
+                                            reportData.map((row, i) => (
+                                                <div key={i} className="grid grid-cols-5 p-3 text-sm border-b border-gray-800 hover:bg-white/5">
+                                                    {/* แสดงวันและเวลาให้ชัดเจน */}
+                                                    <div className="font-mono text-gray-400 text-xs">
+                                                        {new Date(row.log_time).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' })} <span className="text-gray-500">|</span> {new Date(row.log_time).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })}
+                                                    </div>
+                                                    <div className="text-center font-mono text-blue-400">{Number(row.road_val).toFixed(1)}</div>
+                                                    <div className="text-center font-mono text-cyan-400">{Number(row.canal_val).toFixed(1)}</div>
+                                                    <div className="text-right text-[10px] text-green-400">
+                                                        {row.q1_status === 1 ? 'Q1 ON ' : 'Q1 OFF'}
+                                                    </div>
+                                                    <div className="text-right text-[10px] text-red-400">
+                                                        {row.q2_status === 1 ? 'Q2 ON ' : 'Q2 OFF'}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* --- POPUP (Modal) --- */}
             {isModalOpen && (
                 <div className="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -263,7 +382,19 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                         </ResponsiveContainer>
                     </div>
                 </div>
+                {/* --- REPORT BUTTON --- */}
+                <div>
+                    <button
+                        onClick={() => setIsReportModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-600 border border-blue-500/50 hover:border-blue-500 text-white-300 hover:text-white rounded-xl transition-all duration-300 group shadow-lg shadow-blue-900/20"
+                    >
+                        <FileText size={18} className="group-hover:scale-110 transition-transform duration-300" />
+                        <span className="font-semibold text-sm tracking-wide">Report</span>
+                    </button>
+                </div>
             </div>
+
+
             {/* --- (ส่วนที่แทรกเพิ่ม) POPUP GRAHP MODAL --- */}
             {isChartModalOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
