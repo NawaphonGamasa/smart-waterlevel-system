@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, ImageOverlay, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, ImageOverlay, Marker, Popup} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -31,13 +31,13 @@ const MapComponent = ({ stations }) => {
             maxBoundsViscosity={1.0}
             className="w-full h-full rounded-lg shadow-lg bg-gray-900 z-0"
             minZoom={0}
-            maxZoom={2} zommsnap= {0.1}
+            maxZoom={2} zoomSnap={0.1}
             scrollWheelZoom={true}
             style={{ height: '100%', width: '100%' }} // บังคับให้เต็มกรอบ
         >
             {/* 1. รูปพื้นหลังแผนที่ */}
             <ImageOverlay
-                url="/maps/factory-map.jpg" 
+                url="/maps/factory-map.jpg"
                 bounds={bounds}
             />
 

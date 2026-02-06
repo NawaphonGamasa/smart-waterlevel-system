@@ -1,0 +1,889 @@
+[
+    {
+        "id": "53c3d566fccacd92",
+        "type": "tab",
+        "label": "Flowwatwerlevelv2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "def0d16797607e67",
+        "type": "group",
+        "z": "53c3d566fccacd92",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "36cdabcd0bb9d4a3",
+            "3d1c02d83eb444c5",
+            "874521c4e6c4ee69",
+            "1d6adbc9943590b1",
+            "0577312fc2e7e178",
+            "e11e648d0d187867",
+            "8704d73974189f56",
+            "c3f55fc151bd57af"
+        ],
+        "x": 294,
+        "y": 979,
+        "w": 1232,
+        "h": 282
+    },
+    {
+        "id": "132356a19538458c",
+        "type": "group",
+        "z": "53c3d566fccacd92",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "fad22d33b111e690",
+            "41cddf06899e5f5d",
+            "f4e3f6995e16df1b",
+            "0beca920681853fd",
+            "03f854a9f9606558",
+            "ef1701f129268e49",
+            "5193019238287ca8",
+            "11928f0d9dfc9cbf"
+        ],
+        "x": 534,
+        "y": 599,
+        "w": 752,
+        "h": 322
+    },
+    {
+        "id": "8f4ca21aca6dae95",
+        "type": "group",
+        "z": "53c3d566fccacd92",
+        "style": {
+            "stroke": "#999999",
+            "stroke-opacity": "1",
+            "fill": "none",
+            "fill-opacity": "1",
+            "label": true,
+            "label-position": "nw",
+            "color": "#a4a4a4"
+        },
+        "nodes": [
+            "2d6c268f46da4d36",
+            "bf79af0370cd33f3",
+            "4cda9515ff8e7d6c",
+            "7f6976eeda4c41e9",
+            "4c78af8ee0f864c8",
+            "92c3ce29bf7dc0a1",
+            "69bb7495795c389c",
+            "16850601817604d5",
+            "593dbe1d8ac0a0a6",
+            "4ab0a4025273cb9f",
+            "4c0f6b8c2c728751",
+            "dd69dc617580aade",
+            "7c657b28bb239459",
+            "71b232138b41ef13",
+            "49cbbff348beb207",
+            "3533239a916cb71e",
+            "d0352fef797c5667"
+        ],
+        "x": 234,
+        "y": 19,
+        "w": 1272,
+        "h": 522
+    },
+    {
+        "id": "2d6c268f46da4d36",
+        "type": "s7 in",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "endpoint": "69be7fdc0af73a61",
+        "mode": "single",
+        "variable": "Road_Level",
+        "diff": false,
+        "name": "",
+        "x": 330,
+        "y": 298,
+        "wires": [
+            [
+                "4cda9515ff8e7d6c",
+                "69bb7495795c389c"
+            ]
+        ]
+    },
+    {
+        "id": "bf79af0370cd33f3",
+        "type": "s7 in",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "endpoint": "69be7fdc0af73a61",
+        "mode": "single",
+        "variable": "Canal_Level",
+        "diff": false,
+        "name": "",
+        "x": 330,
+        "y": 378,
+        "wires": [
+            [
+                "7f6976eeda4c41e9",
+                "16850601817604d5"
+            ]
+        ]
+    },
+    {
+        "id": "4cda9515ff8e7d6c",
+        "type": "change",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "Road",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "road",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 178,
+        "wires": [
+            [
+                "69bb7495795c389c"
+            ]
+        ]
+    },
+    {
+        "id": "7f6976eeda4c41e9",
+        "type": "change",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "Canal",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "canal",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 510,
+        "y": 478,
+        "wires": [
+            [
+                "16850601817604d5"
+            ]
+        ]
+    },
+    {
+        "id": "4c78af8ee0f864c8",
+        "type": "join",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": true,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 710,
+        "y": 338,
+        "wires": [
+            [
+                "92c3ce29bf7dc0a1"
+            ]
+        ]
+    },
+    {
+        "id": "92c3ce29bf7dc0a1",
+        "type": "function",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "function 3",
+        "func": "// 1. ดึงข้อมูลเก่าจากความจำมาเตรียมไว้\n// (ผมเปลี่ยนชื่อ Key ให้ตรงกับฐานข้อมูลเป๊ะๆ: road_val, canal_val)\nvar savedData = global.get('water_data') || { road_val: 0, canal_val: 0, q1_status: 0, q2_status: 0 };\n\n// 2. เช็คว่าข้อมูลที่เข้ามาคืออะไร? (Logic เดิมแต่เปลี่ยนชื่อตัวแปรรับค่า)\n\n// --- กรณีระดับน้ำ (Road/Canal) ---\nif (msg.payload.Road_Level !== undefined) savedData.road_val = msg.payload.Road_Level;\nif (msg.payload.Canal_Level !== undefined) savedData.canal_val = msg.payload.Canal_Level;\n\n// --- กรณีประตูน้ำ Q1 ---\nif (msg.topic === 'q1_status') {\n    savedData.q1_status = (msg.payload === true || msg.payload == 1) ? 1 : 0;\n}\n\n// --- กรณีประตูน้ำ Q2 ---\nif (msg.topic === 'q2_status') {\n    savedData.q2_status = (msg.payload === true || msg.payload == 1) ? 1 : 0;\n}\n\n// 3. บันทึกค่าล่าสุดกลับเข้าความจำ\nglobal.set('water_data', savedData);\n\n// 4. [สำคัญ] ส่งออกเป็น JSON Object (ไม่ต้องทำ SQL แล้ว)\n// Backend ของเราจะรับก้อนนี้ไปบันทึกลง DB ให้อัตโนมัติ\nmsg.payload = savedData;\n\n// ลบ msg.topic ทิ้ง เพื่อไม่ให้ไปกวน MQTT Topic ที่เราจะตั้งค่าใน Node ถัดไป\ndelete msg.topic; \n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 338,
+        "wires": [
+            [
+                "3533239a916cb71e"
+            ]
+        ]
+    },
+    {
+        "id": "69bb7495795c389c",
+        "type": "range",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "minin": "0",
+        "maxin": "1000",
+        "minout": "0",
+        "maxout": "100.0",
+        "action": "scale",
+        "round": false,
+        "property": "payload",
+        "name": "",
+        "x": 520,
+        "y": 298,
+        "wires": [
+            [
+                "4c78af8ee0f864c8"
+            ]
+        ]
+    },
+    {
+        "id": "16850601817604d5",
+        "type": "range",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "minin": "0",
+        "maxin": "1000",
+        "minout": "0",
+        "maxout": "100.0",
+        "action": "scale",
+        "round": false,
+        "property": "payload",
+        "name": "",
+        "x": 520,
+        "y": 378,
+        "wires": [
+            [
+                "4c78af8ee0f864c8"
+            ]
+        ]
+    },
+    {
+        "id": "fad22d33b111e690",
+        "type": "function",
+        "z": "53c3d566fccacd92",
+        "g": "132356a19538458c",
+        "name": "function 4",
+        "func": "// =========================================================\n// Helper Function: แปลงวินาทีรวม (150) -> รูปแบบ PLC (230)\n// =========================================================\nfunction calculateSeconds(payload) {\n    if (payload === undefined || payload === null) return null;\n    \n    // ถ้า Backend ส่งมาเป็น \"นาที:วินาที\" (เผื่อไว้)\n    let inputStr = String(payload);\n    if (inputStr.includes(\":\")) {\n        let parts = inputStr.split(\":\"); \n        let min = parseInt(parts[0]) || 0; \n        let sec = parseInt(parts[1]) || 0; \n        return (min * 60) + sec;\n    } \n    \n    // *** จุดที่แก้: ถ้าส่งมาเป็นตัวเลข (เช่น 150) ให้ใช้ได้เลย ไม่ต้องคูณ 60 แล้ว ***\n    return parseInt(payload);\n}\n\n// =========================================================\n// Main Logic: รับ JSON ก้อนเดียว แล้วแยกส่ง 5 ขา\n// =========================================================\n\n// รับข้อมูลที่ส่งมาจาก Backend (Topic: water/control/settings)\nvar data = msg.payload;\n\n// ตรวจสอบความถูกต้องของข้อมูลเบื้องต้น\nif (!data || typeof data !== 'object') return null;\n\n// เตรียมตัวแปรสำหรับส่งออกแต่ละขา (เริ่มด้วย null)\nvar outStart = null;      // ขา 1: Start Level\nvar outStop = null;       // ขา 2: Stop Level\nvar outDiff = null;       // ขา 3: Diff Level\nvar outCloseTime = null;  // ขา 4: Close Time\nvar outOpenTime = null;   // ขา 5: Open Time\n\n// --- 1. แยกค่า Start ---\nif (data.start !== undefined) {\n    outStart = { payload: parseInt(data.start) };\n}\n\n// --- 2. แยกค่า Stop ---\nif (data.stop !== undefined) {\n    outStop = { payload: parseInt(data.stop) };\n}\n\n// --- 3. แยกค่า Diff ---\nif (data.diff !== undefined) {\n    outDiff = { payload: parseInt(data.diff) };\n}\n\n// --- 4. แยกค่า Close Time (เข้าสูตรแปลงเป็น MMSS) ---\nif (data.close_time !== undefined) {\n    outCloseTime = { payload: calculateSeconds(data.close_time) };\n}\n\nif (data.open_time !== undefined) {\n    outOpenTime = { payload: calculateSeconds(data.open_time) };\n}\n\n// ส่งออก 5 ช่องพร้อมกัน ตามลำดับสายที่ลากไว้\nreturn [outStart, outStop, outDiff, outCloseTime, outOpenTime];",
+        "outputs": 5,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 680,
+        "wires": [
+            [
+                "41cddf06899e5f5d"
+            ],
+            [
+                "f4e3f6995e16df1b"
+            ],
+            [
+                "0beca920681853fd"
+            ],
+            [
+                "03f854a9f9606558"
+            ],
+            [
+                "ef1701f129268e49"
+            ]
+        ]
+    },
+    {
+        "id": "41cddf06899e5f5d",
+        "type": "s7 out",
+        "z": "53c3d566fccacd92",
+        "g": "132356a19538458c",
+        "endpoint": "69be7fdc0af73a61",
+        "variable": "Set_Road_Start",
+        "name": "",
+        "x": 1160,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "f4e3f6995e16df1b",
+        "type": "s7 out",
+        "z": "53c3d566fccacd92",
+        "g": "132356a19538458c",
+        "endpoint": "69be7fdc0af73a61",
+        "variable": "Set_Road_Stop",
+        "name": "",
+        "x": 1160,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "0beca920681853fd",
+        "type": "s7 out",
+        "z": "53c3d566fccacd92",
+        "g": "132356a19538458c",
+        "endpoint": "69be7fdc0af73a61",
+        "variable": "Set_Diff_Threshold",
+        "name": "",
+        "x": 1170,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "593dbe1d8ac0a0a6",
+        "type": "s7 in",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "endpoint": "69be7fdc0af73a61",
+        "mode": "single",
+        "variable": "Gate_Open",
+        "diff": false,
+        "name": "",
+        "x": 730,
+        "y": 218,
+        "wires": [
+            [
+                "4c0f6b8c2c728751",
+                "7c657b28bb239459"
+            ]
+        ]
+    },
+    {
+        "id": "4ab0a4025273cb9f",
+        "type": "s7 in",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "endpoint": "69be7fdc0af73a61",
+        "mode": "single",
+        "variable": "Gate_Close",
+        "diff": false,
+        "name": "",
+        "x": 730,
+        "y": 438,
+        "wires": [
+            [
+                "dd69dc617580aade"
+            ]
+        ]
+    },
+    {
+        "id": "4c0f6b8c2c728751",
+        "type": "change",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "Q1_status",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "q1_status",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 218,
+        "wires": [
+            [
+                "92c3ce29bf7dc0a1"
+            ]
+        ]
+    },
+    {
+        "id": "dd69dc617580aade",
+        "type": "change",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "Q2_status",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "q2_status",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 930,
+        "y": 438,
+        "wires": [
+            [
+                "92c3ce29bf7dc0a1"
+            ]
+        ]
+    },
+    {
+        "id": "7c657b28bb239459",
+        "type": "debug",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "debug 3",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 920,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "71b232138b41ef13",
+        "type": "inject",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 730,
+        "y": 100,
+        "wires": [
+            [
+                "4c0f6b8c2c728751"
+            ]
+        ]
+    },
+    {
+        "id": "49cbbff348beb207",
+        "type": "inject",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 730,
+        "y": 500,
+        "wires": [
+            [
+                "dd69dc617580aade"
+            ]
+        ]
+    },
+    {
+        "id": "03f854a9f9606558",
+        "type": "s7 out",
+        "z": "53c3d566fccacd92",
+        "g": "132356a19538458c",
+        "endpoint": "69be7fdc0af73a61",
+        "variable": "Set_Close_Time",
+        "name": "",
+        "x": 1160,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "ef1701f129268e49",
+        "type": "s7 out",
+        "z": "53c3d566fccacd92",
+        "g": "132356a19538458c",
+        "endpoint": "69be7fdc0af73a61",
+        "variable": "Set_Open_Time",
+        "name": "",
+        "x": 1160,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "3533239a916cb71e",
+        "type": "mqtt out",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "",
+        "topic": "water/telemetry",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "b75d9b192b66b3eb",
+        "x": 1200,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "5193019238287ca8",
+        "type": "mqtt in",
+        "z": "53c3d566fccacd92",
+        "g": "132356a19538458c",
+        "name": "",
+        "topic": "water/control/settings",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "b75d9b192b66b3eb",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 660,
+        "y": 680,
+        "wires": [
+            [
+                "fad22d33b111e690"
+            ]
+        ]
+    },
+    {
+        "id": "36cdabcd0bb9d4a3",
+        "type": "http in",
+        "z": "53c3d566fccacd92",
+        "g": "def0d16797607e67",
+        "name": "",
+        "url": "/cam2",
+        "method": "get",
+        "upload": false,
+        "skipBodyParsing": false,
+        "swaggerDoc": "",
+        "x": 460,
+        "y": 1120,
+        "wires": [
+            [
+                "3d1c02d83eb444c5"
+            ]
+        ]
+    },
+    {
+        "id": "3d1c02d83eb444c5",
+        "type": "http request",
+        "z": "53c3d566fccacd92",
+        "g": "def0d16797607e67",
+        "name": "Link Cam1",
+        "method": "GET",
+        "ret": "bin",
+        "paytoqs": "ignore",
+        "url": "http://192.168.13.15/cgi-bin/snapshot.cgi?channel=1",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "digest",
+        "senderr": false,
+        "headers": [],
+        "x": 1010,
+        "y": 1120,
+        "wires": [
+            [
+                "874521c4e6c4ee69"
+            ]
+        ]
+    },
+    {
+        "id": "874521c4e6c4ee69",
+        "type": "http response",
+        "z": "53c3d566fccacd92",
+        "g": "def0d16797607e67",
+        "name": "",
+        "statusCode": "200",
+        "headers": {
+            "Content-Type": "image/jpeg"
+        },
+        "x": 1320,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "1d6adbc9943590b1",
+        "type": "catch",
+        "z": "53c3d566fccacd92",
+        "g": "def0d16797607e67",
+        "name": "",
+        "scope": [
+            "3d1c02d83eb444c5"
+        ],
+        "uncaught": false,
+        "x": 450,
+        "y": 1220,
+        "wires": [
+            [
+                "0577312fc2e7e178"
+            ]
+        ]
+    },
+    {
+        "id": "0577312fc2e7e178",
+        "type": "trigger",
+        "z": "53c3d566fccacd92",
+        "g": "def0d16797607e67",
+        "name": "",
+        "op1": "กล้องดับหรืออื่นๆ",
+        "op2": "0",
+        "op1type": "str",
+        "op2type": "str",
+        "duration": "10",
+        "extend": false,
+        "overrideDelay": false,
+        "units": "min",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 2,
+        "x": 690,
+        "y": 1220,
+        "wires": [
+            [
+                "e11e648d0d187867"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e11e648d0d187867",
+        "type": "function",
+        "z": "53c3d566fccacd92",
+        "g": "def0d16797607e67",
+        "name": "function 7",
+        "func": "// ดึงเวลาปัจจุบัน\nvar now = new Date().toLocaleString('th-TH');\n\n// สร้างข้อความที่จะบันทึก\nmsg.payload = now + \" : ❌ Camera Offline (Connection Failed)\\n\";\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 1220,
+        "wires": [
+            [
+                "8704d73974189f56"
+            ]
+        ]
+    },
+    {
+        "id": "8704d73974189f56",
+        "type": "file",
+        "z": "53c3d566fccacd92",
+        "g": "def0d16797607e67",
+        "name": "",
+        "filename": "D:\\smart-waterlevel-system\\logscamera\\camera_error.txt",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 1290,
+        "y": 1220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c3f55fc151bd57af",
+        "type": "comment",
+        "z": "53c3d566fccacd92",
+        "g": "def0d16797607e67",
+        "name": "ส่วนที่เกี่ยวกับกล้อง CCTV",
+        "info": "# # # ## node http 3 ตัวสีเหลืองนี้ node ตัวแรกเอาไว้ตั้ง api ต่อท้ายเพื่อใช้ระบุกล้องตัวที่จะดู\n# # # ## ืnode ตรงกลาง Link cam1 นี้ไว้ใส่ลิ้ง IP กล้อง\n# # # ## # node หลังสุดเอาไว้ตั้งชนิดที่ส่งออก ตอนนี้เป็น image/jpeg\n\nืnode 4 ตัวล่างไว้สำหรับเก็บ log วันเวลาที่กล้องเสียหรือดับ",
+        "x": 430,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "11928f0d9dfc9cbf",
+        "type": "comment",
+        "z": "53c3d566fccacd92",
+        "g": "132356a19538458c",
+        "name": "ส่วนที่เกี่ยวกับการตั้งค่าที่ส่งมาจากหน้าเว็บไปยีง PLC",
+        "info": "",
+        "x": 740,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "d0352fef797c5667",
+        "type": "comment",
+        "z": "53c3d566fccacd92",
+        "g": "8f4ca21aca6dae95",
+        "name": "ส่วนที่เกี่ยวกับการส่งข้อมูลจากเซนเซอร์ผ่าน PLC มาแสดงหน้า dashboard และเก็บลง database",
+        "info": "",
+        "x": 1170,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "69be7fdc0af73a61",
+        "type": "s7 endpoint",
+        "transport": "iso-on-tcp",
+        "address": "192.168.13.9",
+        "port": "102",
+        "rack": "0",
+        "slot": "1",
+        "localtsaphi": "01",
+        "localtsaplo": "00",
+        "remotetsaphi": "01",
+        "remotetsaplo": "00",
+        "connmode": "rack-slot",
+        "adapter": "",
+        "busaddr": 2,
+        "cycletime": 1000,
+        "timeout": 2000,
+        "name": "",
+        "vartable": [
+            {
+                "addr": "DB1,INT2",
+                "name": "Road_Level"
+            },
+            {
+                "addr": "DB1,INT0",
+                "name": "Canal_Level"
+            },
+            {
+                "addr": "DB1,X0.0",
+                "name": "Gate_Remote"
+            },
+            {
+                "addr": "DB1,X1107.3",
+                "name": "Warn_Amber"
+            },
+            {
+                "addr": "DB1,X1107.4",
+                "name": "Alarm_Red"
+            },
+            {
+                "addr": "DB1,INT4",
+                "name": "Set_Road_Start"
+            },
+            {
+                "addr": "DB1,INT6",
+                "name": "Set_Road_Stop"
+            },
+            {
+                "addr": "DB1,INT8",
+                "name": "Set_Diff_Threshold"
+            },
+            {
+                "addr": "Q0.0",
+                "name": "Gate_Open"
+            },
+            {
+                "addr": "Q0.1",
+                "name": "Gate_Close"
+            },
+            {
+                "addr": "DB1,X1104.0",
+                "name": "Auto_Mode"
+            },
+            {
+                "addr": "DB1,X948.0",
+                "name": "Run"
+            },
+            {
+                "addr": "DB1,X948.1",
+                "name": "Stop"
+            },
+            {
+                "addr": "DB1,X948.2",
+                "name": "Ready"
+            },
+            {
+                "addr": "DB1,X948.3",
+                "name": "Fault"
+            },
+            {
+                "addr": "DB1,INT12",
+                "name": "Set_Close_Time"
+            },
+            {
+                "addr": "DB1,INT10",
+                "name": "Set_Open_Time"
+            }
+        ]
+    },
+    {
+        "id": "b75d9b192b66b3eb",
+        "type": "mqtt-broker",
+        "name": "localhost",
+        "broker": "localhost",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "9506e2f05f465af0",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-s7": "3.1.1"
+        }
+    }
+]

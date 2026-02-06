@@ -6,8 +6,8 @@ import useRealtime from '../../hooks/useRealtime';
 
 // พิกัดหมุดบนแผนที่ (ปรับตามความจริง)
 const STATION_POSITIONS = {
-  ROAD: [450, 600],
-  CANAL: [450, 900]
+  ROAD: [586.93, 454.88],
+  CANAL: [626.46, 351.88]
 };
 
 const Dashboard = () => {
@@ -25,7 +25,7 @@ const Dashboard = () => {
       val: waterData.road_val,
       position: STATION_POSITIONS.ROAD,
       lastUpdate: waterData.log_time,
-      camUrl: '' // ใส่ URL กล้อง
+      camUrl: '' // ใส่ URL กล้อง URL นี้มาจาก nodered
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ const Dashboard = () => {
       val: waterData.canal_val,
       position: STATION_POSITIONS.CANAL,
       lastUpdate: waterData.log_time,
-      camUrl: ''
+      camUrl: 'http://localhost:1880/cam2'
     }
   ];
 
