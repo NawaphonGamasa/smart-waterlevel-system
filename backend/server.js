@@ -44,7 +44,7 @@ app.use('/api', apiRoutes);
 app.get('/', (req, res) => res.send('🚀 Smart Water Level System API is Ready!'));
 
 // 8. Start Server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`\n🚀 Server running on port ${PORT}`);
     console.log(`📡 Socket.io ready`);

@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 // URL ของ Backend (ระวัง! ต้องไม่มี /api ต่อท้ายสำหรับ Socket)
-const SOCKET_URL = 'http://localhost:3000';
+const SOCKET_URL = 'http://localhost:3001';
 
 class SocketService {
     constructor() {
