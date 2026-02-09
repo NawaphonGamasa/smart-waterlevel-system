@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, ImageOverlay, Marker, Popup} from 'react-leaflet';
+import { MapContainer, ImageOverlay, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -29,15 +29,19 @@ const MapComponent = ({ stations }) => {
             bounds={bounds}
             maxBounds={bounds}
             maxBoundsViscosity={1.0}
-            className="w-full h-full rounded-lg shadow-lg bg-gray-900 z-0"
+            // ✅ ปรับ Responsive Class:
+            // - Mobile: เต็มจอ (rounded-none), ไม่มีเงา, พื้นหลังมืด
+            // - Desktop (lg): มุมโค้ง (rounded-2xl), มีเงา (shadow-2xl), มีขอบ (border)
+            className="w-full h-full bg-[#0B1121] z-0 rounded-none lg:rounded-2xl shadow-none lg:shadow-2xl lg:border lg:border-gray-800 outline-none"
             minZoom={0}
-            maxZoom={2} zoomSnap={0.1}
+            maxZoom={2} 
+            zoomSnap={0.1} // แก้ไขคำผิดจาก zommsnap -> zoomSnap
             scrollWheelZoom={true}
             style={{ height: '100%', width: '100%' }} // บังคับให้เต็มกรอบ
         >
             {/* 1. รูปพื้นหลังแผนที่ */}
             <ImageOverlay
-                url="/maps/factory-map.jpg"
+                url="/maps/factory-map.jpg" 
                 bounds={bounds}
             />
 

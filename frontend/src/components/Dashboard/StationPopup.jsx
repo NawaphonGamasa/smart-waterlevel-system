@@ -16,11 +16,13 @@ const StationPopup = ({ data }) => {
     : '--:--:--';
 
   return (
-    <div className={`w-96 bg-gray-900/95 backdrop-blur-xl text-white rounded-xl border ${borderColor} shadow-2xl overflow-hidden font-sans select-none`}>
+    // ✅ ปรับแก้ 1: เปลี่ยน w-96 เป็น w-[280px] sm:w-96 (มือถือเล็กลง, จอใหญ่เท่าเดิม)
+    <div className={`w-[280px] sm:w-96 bg-gray-900/95 backdrop-blur-xl text-white rounded-xl border ${borderColor} shadow-2xl overflow-hidden font-sans select-none`}>
       
       {/* Header */}
       <div className="bg-gray-800/80 p-3 flex justify-between items-center border-b border-gray-700">
-        <h3 className="text-base font-bold flex items-center gap-2 text-gray-100">
+        {/* ✅ ปรับแก้ 2: ปรับขนาด Text Header ตามหน้าจอ */}
+        <h3 className="text-sm sm:text-base font-bold flex items-center gap-2 text-gray-100">
           <Activity size={18} className="text-blue-400" />
           {data.name}
         </h3>
@@ -31,17 +33,19 @@ const StationPopup = ({ data }) => {
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-5">
+      {/* ✅ ปรับแก้ 3: ลด Padding และ Space ในมือถือ (p-3 sm:p-4) */}
+      <div className="p-3 sm:p-4 space-y-4 sm:space-y-5">
         
         {/* Value Section */}
         <div className="flex justify-between items-end pb-2 border-b border-gray-700/50">
           <div>
             <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Water Level</p>
             <div className="flex items-baseline gap-1">
-              <span className={`text-5xl font-black ${isNormal ? 'text-blue-400' : 'text-red-500'}`}>
+              {/* ✅ ปรับแก้ 4: ลดขนาดตัวเลขในมือถือ (text-4xl sm:text-5xl) */}
+              <span className={`text-4xl sm:text-5xl font-black ${isNormal ? 'text-blue-400' : 'text-red-500'}`}>
                 {data.val.toFixed(1)}
               </span>
-              <span className="text-lg text-gray-500 font-medium">%</span>
+              <span className="text-sm sm:text-lg text-gray-500 font-medium">%</span>
             </div>
           </div>
           <div className="text-right">
@@ -49,7 +53,7 @@ const StationPopup = ({ data }) => {
               <Clock size={10} />
               <span className="text-[10px] font-bold uppercase">Last Update</span>
             </div>
-            <p className="text-sm font-mono text-gray-300 bg-gray-800 px-2 py-0.5 rounded inline-block">
+            <p className="text-xs sm:text-sm font-mono text-gray-300 bg-gray-800 px-2 py-0.5 rounded inline-block">
               {formattedTime}
             </p>
           </div>
