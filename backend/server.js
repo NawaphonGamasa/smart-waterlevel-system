@@ -19,7 +19,18 @@ const server = http.createServer(app);
 
 // 3. Security Middleware
 app.use(helmet());
-app.use(cors({ origin: '*', methods: ['GET', 'POST'], credentials: true }));
+// ✅ แก้ CORS ตรงนี้ครับ (สำคัญมากสำหรับการเข้าผ่าน IP)
+const corsOptions = {
+    origin: function (origin, callback) {
+        // อนุญาตให้ผ่านหมด (หรือจะเช็ค if (origin) ก็ได้)
+        // null คือกรณีเรียกจาก Server-to-Server หรือ Postman
+        callback(null, true);
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true // อนุญาตให้ส่ง Cookie/Header ข้าม Domain ได้
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // 4. Rate Limiting (ความปลอดภัย: กันยิงรัว)
@@ -44,7 +55,7 @@ app.use('/api', apiRoutes);
 app.get('/', (req, res) => res.send('🚀 Smart Water Level System API is Ready!'));
 
 // 8. Start Server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
     console.log(`\n🚀 Server running on port ${PORT}`);
     console.log(`📡 Socket.io ready`);
