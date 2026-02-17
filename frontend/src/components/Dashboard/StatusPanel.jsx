@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Activity, Droplets, Zap, X, Maximize2, FileText, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Settings, Activity, Droplets, Zap, X, Maximize2, FileText, Calendar, LogOut } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { saveSettings, getDailyReport } from '../../services/api'; // ตรวจสอบ path ว่าถูกต้อง
+import { saveSettings, getDailyReport } from '../../services/api';
 
-// แก้ไขบรรทัดนี้: รับ Props แยกกันตามโครงสร้างเดิมของคุณ + เพิ่ม settings และ onRefresh
 const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
-
+    const navigate = useNavigate();
+    const userRole = localStorage.getItem('role');
+    const isAdmin = userRole === 'admin';
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate('/login');
+        window.location.reload();
+    };
     // 1. State นาฬิกา
     const [timeStr, setTimeStr] = useState(new Date().toLocaleString('th-TH'));
 
@@ -278,8 +285,8 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                                     <button onClick={handleSaveConfig} className="w-20 sm:w-24 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs sm:text-sm font-bold text-white">บันทึก</button>
                                 </div>
                             </div>
-                             {/* Timer Sections - ปรับ button size เล็กน้อย */}
-                             <div className="space-y-2 pt-2 border-t border-gray-800">
+                            {/* Timer Sections - ปรับ button size เล็กน้อย */}
+                            <div className="space-y-2 pt-2 border-t border-gray-800">
                                 <label className="text-xs sm:text-sm font-semibold text-gray-400 flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-gray-500" />เวลาปิดประตูน้ำ (Close)</label>
                                 <div className="flex gap-2 items-center">
                                     <div className="flex-1 flex gap-2 items-center bg-gray-900 border border-gray-700 rounded-xl px-4 py-1">
@@ -331,7 +338,7 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
             {/* --- CONTENT --- */}
             {/* ✅ ปรับ padding: p-3 (มือถือ) -> p-5 (จอใหญ่) */}
             <div className="flex-1 overflow-y-auto p-3 lg:p-5 space-y-3 lg:space-y-5 z-10 custom-scrollbar">
-                
+
                 {/* CARD 1: Road */}
                 <div className="bg-gray-800/40 rounded-2xl p-4 lg:p-5 border border-white/5 hover:border-blue-500/30 transition-all duration-300 group shadow-lg">
                     <div className="flex justify-between items-start mb-2 lg:mb-4">
@@ -353,7 +360,11 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
 
                 {/* CARD 2: Canal */}
                 <div className="bg-gray-800/40 rounded-2xl p-4 lg:p-5 border border-white/5 hover:border-cyan-500/30 transition-all duration-300 group shadow-lg relative">
-                    <button className="absolute top-4 right-4 p-2 text-gray-600 hover:text-white hover:bg-white/10 rounded-lg transition-all" onClick={() => setIsModalOpen(true)}><Settings size={18} /></button>
+                    {isAdmin && (
+                        <button className="absolute top-4 right-4 p-2 text-gray-600 hover:text-white hover:bg-white/10 rounded-lg transition-all" onClick={() => setIsModalOpen(true)}>
+                            <Settings size={18} />
+                        </button>
+                    )}
                     <div className="flex justify-between items-start mb-2 lg:mb-4 pr-10">
                         <div className="flex items-center gap-3 mb-4 lg:mb-6">
                             <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 group-hover:text-cyan-300 group-hover:bg-cyan-500/20"><Droplets size={20} /></div>
@@ -364,7 +375,7 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                     <div className="flex items-end justify-between mb-4 lg:mb-6 pb-4 lg:pb-6 border-b border-white/5">
                         <div>
                             <span className="text-gray-500 text-[10px] uppercase tracking-widest font-semibold">Sensor Value</span>
-                             {/* ✅ ปรับขนาด Font Value */}
+                            {/* ✅ ปรับขนาด Font Value */}
                             <div className="text-4xl lg:text-5xl font-mono font-bold text-white mt-1 tracking-tighter drop-shadow-lg">{safeWater.canal_val.toFixed(1)}<span className="text-base lg:text-xl text-gray-500 ml-1 font-sans">%</span></div>
                         </div>
                         <div className="flex flex-col items-end gap-1 mb-1"><div className={`w-3 h-3 rounded-full transition-all duration-500 ${safeWater.canal_val > 0 ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' : 'bg-red-500 shadow-[0_0_15px_#ef4444] animate-pulse'}`}></div><span className="text-[10px] text-gray-500 font-bold uppercase">Reading / Fault</span></div>
@@ -411,12 +422,13 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                         </ResponsiveContainer>
                     </div>
                 </div>
-                
+
                 {/* --- REPORT BUTTON --- */}
                 <div>
                     <button
                         onClick={() => setIsReportModalOpen(true)}
                         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-600 border border-blue-500/50 hover:border-blue-500 text-white-300 hover:text-white rounded-xl transition-all duration-300 group shadow-lg shadow-blue-900/20 w-full lg:w-auto justify-center lg:justify-start"
+                        title='ประวัติข้อมูลย้อนหลัง'
                     >
                         <FileText size={18} className="group-hover:scale-110 transition-transform duration-300" />
                         <span className="font-semibold text-sm tracking-wide">Report</span>
@@ -428,7 +440,7 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
             {/* --- POPUP GRAHP MODAL --- */}
             {isChartModalOpen && (
                 <div className="fixed inset-0 z-[110] flex items-center justify-center p-0 lg:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                     {/* ✅ ปรับ Chart Modal: มือถือเต็มจอ */}
+                    {/* ✅ ปรับ Chart Modal: มือถือเต็มจอ */}
                     <div className="bg-[#1F2937] w-full h-full lg:w-[95vw] lg:h-[85vh] rounded-none lg:rounded-2xl border-none lg:border border-gray-700 shadow-2xl overflow-hidden flex flex-col">
                         <div className="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800/50">
                             <div className="flex items-center gap-2">
@@ -458,6 +470,16 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                     </div>
                 </div>
             )}
+
+                <button
+                    onClick={handleLogout}
+                    className="w-[40px] bg-[#ff0000] hover:bg-[#700000] text-white font-bold text-lg py-3 rounded-[10px] shadow-lg mt-2 ml-2 transition-all transform disabled:opacity-70 disabled:cursor-not-allowed"
+                    title="ออกจากระบบ"
+                >
+                    <div className="flex items-end justify-center">
+                        <LogOut size={18} className="group-hover:scale-110 transition-transform duration-300" />
+                    </div>
+                </button>
         </div>
     );
 };

@@ -19,10 +19,10 @@ const server = http.createServer(app);
 
 // 3. Security Middleware
 app.use(helmet());
-// ✅ แก้ CORS ตรงนี้ครับ (สำคัญมากสำหรับการเข้าผ่าน IP)
+// แก้ CORS
 const corsOptions = {
     origin: function (origin, callback) {
-        // อนุญาตให้ผ่านหมด (หรือจะเช็ค if (origin) ก็ได้)
+        // อนุญาตให้ผ่านหมด
         // null คือกรณีเรียกจาก Server-to-Server หรือ Postman
         callback(null, true);
     },
