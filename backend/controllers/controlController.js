@@ -15,7 +15,7 @@ exports.toggleGate = (req, res) => {
 
 exports.updateSettings = async (req, res) => {
     // 1. รับค่าจากหน้าเว็บ
-    const { start_val, stop_val, diff_val, open_time_val, close_time_val } = req.body;
+    const { start_val, stop_val, diff_val, open_time_val, close_time_val, permission_val } = req.body;
 
     // --- ส่วนที่เพิ่ม: ฟังก์ชันแปลง "นาที:วินาที" ให้เป็น "วินาที" (เช่น "2:30" -> 150) ---
     const toSeconds = (val) => {
@@ -41,7 +41,8 @@ exports.updateSettings = async (req, res) => {
             stop_val, 
             diff_val, 
             open_time_val: openSeconds,  // เก็บ 150
-            close_time_val: closeSeconds // เก็บ 150
+            close_time_val: closeSeconds, // เก็บ 150
+            permission_val: permission_val ? 1 : 0
         });
 
         // 3. ส่ง MQTT ไป Node-RED (ส่งเป็นวินาทีล้วนๆ ไปเหมือนกัน)
@@ -50,7 +51,8 @@ exports.updateSettings = async (req, res) => {
             stop: stop_val,
             diff: diff_val,
             open_time: openSeconds,  // ส่ง 150
-            close_time: closeSeconds // ส่ง 150
+            close_time: closeSeconds, // ส่ง 150
+            permission: permission_val
         });
 
         res.json({ status: 'success', message: 'Settings updated' });

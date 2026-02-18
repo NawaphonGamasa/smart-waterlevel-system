@@ -17,6 +17,7 @@ const SettingModel = {
                 diff_val = ?, 
                 open_time_val = ?, 
                 close_time_val = ?, 
+                permission_val = ?,
                 last_update = NOW()
             WHERE id = 1
         `;
@@ -25,7 +26,8 @@ const SettingModel = {
             data.stop_val,
             data.diff_val,
             data.open_time_val,  
-            data.close_time_val  
+            data.close_time_val,
+            data.permission_val 
         ]);
         return result.affectedRows > 0;
     }

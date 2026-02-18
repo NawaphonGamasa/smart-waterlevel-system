@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MapContainer from './MapContainer';
 import StatusPanel from './StatusPanel';
 import Loading from '../Common/Loading';
 import useRealtime from '../../hooks/useRealtime';
+import PermissionAlert from '../Common/PermissionAlert';
+import { saveSettings } from '../../services/api';
 
 // พิกัดหมุดบนแผนที่ (ปรับตามความจริง)
 const STATION_POSITIONS = {
@@ -13,6 +15,97 @@ const STATION_POSITIONS = {
 const Dashboard = () => {
   // เรียกใช้ Hook
   const { waterData, historyData, isConnected, isLoading, settings, fetchData } = useRealtime();
+  const [showPermissionPopup, setShowPermissionPopup] = useState(false);
+  const [snooze, setSnooze] = useState(false); // ตัวแปรกัน popup เด้งรัวๆ
+
+  useEffect(() => {
+    // รอให้ข้อมูลมาครบก่อนค่อยเช็ค
+    if (!waterData || !settings) return;
+
+    const userRole = localStorage.getItem('role');
+    const isAdmin = userRole === 'admin';
+    const currentLevel = Number(waterData.road_val);
+    const canalLevel = Number(waterData.canal_val);
+    const limitLevel = Number(settings.start_val) / 10;
+    const diffLimit = Number(settings.diff_val) / 10;
+
+    // 2. คำนวณผลต่างจริง (น้ำถนน - น้ำคลอง)
+    const currentDiff = currentLevel - canalLevel;
+
+    console.log("🌊 MONITORING (Scaled):", {
+      Level: currentLevel,
+      Canal: canalLevel,
+      Actual_Diff: currentDiff.toFixed(2),
+      Limit_Raw: settings.start_val,
+      Limit_Real: limitLevel,
+      IsCritical: currentLevel >= limitLevel,
+      Setting_Diff: diffLimit,
+      IsDiffEnough: currentDiff >= diffLimit
+    });
+
+    // เงื่อนไข: น้ำถนน > ค่า Start และ Permission ยังเป็น 0 (False)
+    const isCritical = currentLevel >= limitLevel;
+    const isNotAllowed = settings.permission_val != 1;
+    const isDiffPass = currentDiff >= diffLimit;
+
+    // ถ้าเข้าเงื่อนไข และไม่ได้กด Snooze -> แสดง Popup
+    if (isCritical && isNotAllowed && !snooze && isDiffPass && isAdmin) {
+      setShowPermissionPopup(true);
+    } else {
+      setShowPermissionPopup(false);
+    }
+  }, [waterData, settings, snooze]);
+
+  // ฟังก์ชัน: เมื่อกด "อนุญาต"
+  const handleAllow = async () => {
+    try {
+      // 1. ส่งคำสั่งเปิด Permission (ON)
+      await saveSettings({
+        ...settings,
+        permission_val: 1
+      });
+
+      setShowPermissionPopup(false);
+      fetchData(); // รีเฟรชหน้าจอให้รู้ว่าเปิดแล้ว
+
+      // ดึงค่าเวลาเปิดประตู (สมมติว่าเป็นวินาที)
+      // ถ้าไม่มีค่า ให้กันเหนียวไว้ที่ 60 วินาที
+      const durationSeconds = Number(settings.open_time_val) || 60;
+
+      console.log(`⏳ Permission granted for ${durationSeconds} seconds...`);
+
+      // ตั้งเวลา (setTimeout) ตามจำนวนวินาที * 1000 (แปลงเป็น ms)
+      setTimeout(async () => {
+        try {
+          console.log("⏰ Time's up! Revoking permission...");
+
+          // ส่งคำสั่งปิด Permission (OFF)
+          await saveSettings({
+            ...settings, // (หมายเหตุ: ตรงนี้อาจต้องระวังค่าเก่า ถ้ามีการเปลี่ยนค่าอื่นระหว่างรอ)
+            permission_val: 0
+          });
+
+          fetchData(); // รีเฟรชหน้าจออีกครั้ง
+
+        } catch (err) {
+          console.error("❌ Failed to auto-revoke permission:", err);
+        }
+      }, durationSeconds * 1000);
+
+    } catch (err) {
+      console.error("Error allowing permission:", err);
+      alert("เกิดข้อผิดพลาดในการส่งคำสั่ง");
+    }
+  };
+
+  // ฟังก์ชัน: เมื่อกด "ไม่อนุญาต" (Snooze 5 นาที)
+  const handleDeny = () => {
+    setShowPermissionPopup(false);
+    setSnooze(true); // ปิดปากมันไว้ก่อน
+
+    // ตั้งเวลา 5 นาที (300,000 ms) ค่อยให้เด้งใหม่ถ้าน้ำยังท่วม
+    setTimeout(() => setSnooze(false), 60000);
+  };
 
   // ถ้ากำลังโหลดข้อมูล ให้แสดงหน้า Loading สวยๆ
   if (isLoading) return <Loading />;
@@ -41,9 +134,15 @@ const Dashboard = () => {
   return (
     // ✅ 1. Container หลัก: เปลี่ยนเป็น flex-col (แนวตั้ง) สำหรับมือถือ และ lg:flex-row (แนวนอน) สำหรับจอคอม
     <div className="flex flex-col lg:flex-row h-screen w-screen bg-gray-900 text-white overflow-hidden font-sans">
-
+      {showPermissionPopup && (
+        <PermissionAlert
+          level={waterData.road_val}
+          onAllow={handleAllow}
+          onDeny={handleDeny}
+        />
+      )}
       {/* ส่วนที่ 1: พื้นที่แผนที่ */}
-      {/* ✅ 2. ปรับขนาด: มือถือสูง 50% กว้างเต็ม / จอคอมสูงเต็ม ยืดความกว้าง (flex-1) */}
+      {/*  2. ปรับขนาด: มือถือสูง 50% กว้างเต็ม / จอคอมสูงเต็ม ยืดความกว้าง (flex-1) */}
       <div className="h-[50%] w-full lg:h-full lg:flex-1 relative z-0">
         <MapContainer stations={stations} />
 
@@ -63,7 +162,7 @@ const Dashboard = () => {
         <StatusPanel
           waterData={waterData}
           historyData={historyData}
-          settings={settings}           // <-- เพิ่มบรรทัดนี้
+          settings={settings}
           onRefresh={fetchData}         // <-- เพิ่มบรรทัดนี้ (เพื่อให้กดบันทึกแล้วหน้าเว็บอัปเดต)
         />
       </div>
