@@ -46,10 +46,13 @@ const Dashboard = () => {
     // เงื่อนไข: น้ำถนน > ค่า Start และ Permission ยังเป็น 0 (False)
     const isCritical = currentLevel >= limitLevel;
     const isNotAllowed = settings.permission_val != 1;
+    // ความต่างของน้ำทั่งสองฝั่งจะต้องมากกว่าค่าความต่างที่เราตั้งไว้
     const isDiffPass = currentDiff >= diffLimit;
+    // ค่าฝั่งคลองจะต้องไม่ต่ำกว่า 0
+    const isCanalValid = canalLevel >= 0;
 
     // ถ้าเข้าเงื่อนไข และไม่ได้กด Snooze -> แสดง Popup
-    if (isCritical && isNotAllowed && !snooze && isDiffPass && isStaff) {
+    if (isCritical && isNotAllowed && !snooze && isDiffPass && isCanalValid && isStaff) {
       setShowPermissionPopup(true);
     } else {
       setShowPermissionPopup(false);
@@ -66,10 +69,9 @@ const Dashboard = () => {
       });
 
       setShowPermissionPopup(false);
-      fetchData(); // รีเฟรชหน้าจอให้รู้ว่าเปิดแล้ว
+      fetchData(); // รีเฟรชหน้าจอ
 
-      // ดึงค่าเวลาเปิดประตู (สมมติว่าเป็นวินาที)
-      // ถ้าไม่มีค่า ให้กันเหนียวไว้ที่ 60 วินาที
+      // ดึงค่าเวลาเปิดประตู ถ้าไม่มีค่า ให้กันเหนียวไว้ที่ 60 วินาที
       const durationSeconds = Number(settings.open_time_val) || 60;
 
       console.log(`⏳ Permission granted for ${durationSeconds} seconds...`);
@@ -98,16 +100,29 @@ const Dashboard = () => {
     }
   };
 
-  // ฟังก์ชัน: เมื่อกด "ไม่อนุญาต" (Snooze 5 นาที)
-  const handleDeny = () => {
+  // ฟังก์ชัน: เมื่อกด "ไม่อนุญาต" (Snooze)
+  const handleDeny = async () => {
+    // 1. ปิด Popup และเปิดโหมด Snooze บนหน้าเว็บทันที
     setShowPermissionPopup(false);
-    setSnooze(true); // ปิดปากมันไว้ก่อน
+    setSnooze(true);
 
-    // ตั้งเวลา 5 นาที (300,000 ms) ค่อยให้เด้งใหม่ถ้าน้ำยังท่วม
+    // เพิ่มการส่งคำสั่ง 0 ย้ำไปที่ Backend/PLC เพื่อความปลอดภัย
+    try {
+      await saveSettings({
+        ...settings,
+        permission_val: 0
+      });
+      fetchData(); // รีเฟรชข้อมูลล่าสุด
+    } catch (err) {
+      console.error("❌ Error enforcing deny permission:", err);
+    }
+
+    // 3. ตั้งเวลา Snooze (ปิดไว้ชั่วคราว)
+    // ถ้าอยากได้ 5 นาทีต้องเปลี่ยนเป็น 300000 (5 * 60 * 1000)
     setTimeout(() => setSnooze(false), 5000);
   };
 
-  // ถ้ากำลังโหลดข้อมูล ให้แสดงหน้า Loading สวยๆ
+  // ถ้ากำลังโหลดข้อมูล ให้แสดงหน้า Loading
   if (isLoading) return <Loading />;
 
   const stations = [
@@ -132,7 +147,6 @@ const Dashboard = () => {
   ];
 
   return (
-    // ✅ 1. Container หลัก: เปลี่ยนเป็น flex-col (แนวตั้ง) สำหรับมือถือ และ lg:flex-row (แนวนอน) สำหรับจอคอม
     <div className="flex flex-col lg:flex-row h-screen w-screen bg-gray-900 text-white overflow-hidden font-sans">
       {showPermissionPopup && (
         <PermissionAlert
@@ -142,7 +156,6 @@ const Dashboard = () => {
         />
       )}
       {/* ส่วนที่ 1: พื้นที่แผนที่ */}
-      {/*  2. ปรับขนาด: มือถือสูง 50% กว้างเต็ม / จอคอมสูงเต็ม ยืดความกว้าง (flex-1) */}
       <div className="h-[50%] w-full lg:h-full lg:flex-1 relative z-0">
         <MapContainer stations={stations} />
 
@@ -156,14 +169,12 @@ const Dashboard = () => {
       </div>
 
       {/* ส่วนที่ 2: แถบสถานะ */}
-      {/* ✅ 3. ปรับขนาด: มือถือสูง 50% กว้างเต็ม / จอคอมสูงเต็ม กว้าง 25% */}
-      {/* ✅ 4. ปรับเส้นขอบ: มือถือมีขอบบน (border-t) / จอคอมมีขอบซ้าย (border-l) */}
       <div className="h-[50%] w-full lg:h-full lg:w-[25%] flex-shrink-0 bg-gray-800 border-t lg:border-t-0 lg:border-l border-gray-700 shadow-2xl z-10 flex flex-col">
         <StatusPanel
           waterData={waterData}
           historyData={historyData}
           settings={settings}
-          onRefresh={fetchData}         // <-- เพิ่มบรรทัดนี้ (เพื่อให้กดบันทึกแล้วหน้าเว็บอัปเดต)
+          onRefresh={fetchData}
         />
       </div>
 
