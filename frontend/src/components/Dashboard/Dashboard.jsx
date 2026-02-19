@@ -23,7 +23,7 @@ const Dashboard = () => {
     if (!waterData || !settings) return;
 
     const userRole = localStorage.getItem('role');
-    const isAdmin = userRole === 'admin';
+    const isStaff = userRole === 'admin' || userRole === 'admin2';
     const currentLevel = Number(waterData.road_val);
     const canalLevel = Number(waterData.canal_val);
     const limitLevel = Number(settings.start_val) / 10;
@@ -49,7 +49,7 @@ const Dashboard = () => {
     const isDiffPass = currentDiff >= diffLimit;
 
     // ถ้าเข้าเงื่อนไข และไม่ได้กด Snooze -> แสดง Popup
-    if (isCritical && isNotAllowed && !snooze && isDiffPass && isAdmin) {
+    if (isCritical && isNotAllowed && !snooze && isDiffPass && isStaff) {
       setShowPermissionPopup(true);
     } else {
       setShowPermissionPopup(false);
@@ -81,7 +81,7 @@ const Dashboard = () => {
 
           // ส่งคำสั่งปิด Permission (OFF)
           await saveSettings({
-            ...settings, // (หมายเหตุ: ตรงนี้อาจต้องระวังค่าเก่า ถ้ามีการเปลี่ยนค่าอื่นระหว่างรอ)
+            ...settings,
             permission_val: 0
           });
 
@@ -104,7 +104,7 @@ const Dashboard = () => {
     setSnooze(true); // ปิดปากมันไว้ก่อน
 
     // ตั้งเวลา 5 นาที (300,000 ms) ค่อยให้เด้งใหม่ถ้าน้ำยังท่วม
-    setTimeout(() => setSnooze(false), 60000);
+    setTimeout(() => setSnooze(false), 5000);
   };
 
   // ถ้ากำลังโหลดข้อมูล ให้แสดงหน้า Loading สวยๆ

@@ -26,4 +26,13 @@ const isAdmin = (req, res, next) => {
     }
 };
 
-module.exports = {verifyToken, isAdmin};
+const isStaff = (req, res, next) => {
+    // ยอมรับทั้ง admin และ admin2
+    if (req.user && (req.user.role === 'admin' || req.user.role === 'admin2')) {
+        next();
+    } else {
+        return res.status(403).json({ message: 'Access Denied: Staff only' });
+    }
+};
+
+module.exports = {verifyToken, isAdmin,isStaff};

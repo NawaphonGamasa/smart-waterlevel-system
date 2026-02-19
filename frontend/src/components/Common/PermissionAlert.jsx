@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
 const PermissionAlert = ({ level, onAllow, onDeny }) => {
     return (
-        <div className="fixed top-4 right-4 lg:right-[26%] z-[9999] animate-bounce-in w-full max-w-lg">
+        <div className="fixed top-4 right-4 lg:right-[26%] z-[1] animate-bounce-in w-full max-w-lg">
             {/* กล่องดำโปร่งแสง พร้อมขอบแดงเรืองแสง */}
             <div className="bg-[#0f172a]/95 backdrop-blur-xl border border-red-500/50 shadow-[0_0_30px_rgba(220,38,38,0.4)] text-white p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
 

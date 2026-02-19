@@ -3,7 +3,7 @@ const router = express.Router();
 const dataController = require('../controllers/dataController');
 const controlController = require('../controllers/controlController');
 const authController = require('../controllers/authController');
-const { verifyToken, isAdmin } = require('../middlewares/authMiddleware');
+const { verifyToken, isAdmin, isStaff } = require('../middlewares/authMiddleware');
 
 router.post('/login', authController.login);
 
@@ -13,6 +13,6 @@ router.get('/report', verifyToken, dataController.getDailyReport);
 
 // POST สั่งงาน (ควรมีการป้องกันเพิ่มในอนาคต)
 router.post('/control/gate', verifyToken, isAdmin, controlController.toggleGate);
-router.post('/control/settings', verifyToken, isAdmin, controlController.updateSettings);
+router.post('/control/settings', verifyToken, isStaff, controlController.updateSettings);
 
 module.exports = router;
