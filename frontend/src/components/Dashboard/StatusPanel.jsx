@@ -423,17 +423,7 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                     </div>
                 </div>
 
-                {/* --- REPORT BUTTON --- */}
-                <div>
-                    <button
-                        onClick={() => setIsReportModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-600 border border-blue-500/50 hover:border-blue-500 text-white-300 hover:text-white rounded-xl transition-all duration-300 group shadow-lg shadow-blue-900/20 w-full lg:w-auto justify-center lg:justify-start"
-                        title='ประวัติข้อมูลย้อนหลัง'
-                    >
-                        <FileText size={18} className="group-hover:scale-110 transition-transform duration-300" />
-                        <span className="font-semibold text-sm tracking-wide">Report</span>
-                    </button>
-                </div>
+                
             </div>
 
 
@@ -470,16 +460,25 @@ const StatusPanel = ({ waterData, historyData, settings, onRefresh }) => {
                     </div>
                 </div>
             )}
+                {/* ✅ สร้าง Action Footer ด้านล่างสุด ให้ติดหนึบตลอดเวลา ไม่ต้อง Scroll หามัน */}
+            <div className="p-3 sm:p-4 border-t border-gray-800 bg-gray-900 flex gap-2 sm:gap-3 flex-shrink-0 z-10">
+                <button
+                    onClick={() => setIsReportModalOpen(true)}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-blue-600/90 hover:bg-blue-500 border border-blue-500/50 text-gray-200 hover:text-white rounded-xl transition-all duration-300 group shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                    title='ประวัติข้อมูลย้อนหลัง'
+                >
+                    <FileText size={18} className="group-hover:scale-110 transition-transform duration-300" />
+                    <span className="font-semibold text-xs sm:text-sm tracking-wide">Report</span>
+                </button>
 
                 <button
                     onClick={handleLogout}
-                    className="w-[40px] bg-[#ff0000] hover:bg-[#700000] text-white font-bold text-lg py-3 rounded-[10px] shadow-lg mt-2 ml-2 transition-all transform disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-[50px] sm:w-[60px] flex items-center justify-center bg-red-600/90 hover:bg-red-500 border border-red-500/50 text-gray-200 hover:text-white rounded-xl transition-all duration-300 group shadow-[0_0_15px_rgba(220,38,38,0.2)]"
                     title="ออกจากระบบ"
                 >
-                    <div className="flex items-end justify-center">
-                        <LogOut size={18} className="group-hover:scale-110 transition-transform duration-300" />
-                    </div>
+                    <LogOut size={18} className="group-hover:scale-110 transition-transform duration-300 ml-1" />
                 </button>
+            </div>
         </div>
     );
 };

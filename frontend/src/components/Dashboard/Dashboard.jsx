@@ -123,6 +123,7 @@ const Dashboard = () => {
   };
 
   // ถ้ากำลังโหลดข้อมูล ให้แสดงหน้า Loading
+  const hostname = window.location.hostname;
   if (isLoading) return <Loading />;
 
   const stations = [
@@ -133,7 +134,7 @@ const Dashboard = () => {
       val: waterData.road_val,
       position: STATION_POSITIONS.ROAD,
       lastUpdate: waterData.log_time,
-      camUrl: '' // ใส่ URL กล้อง URL นี้มาจาก nodered
+      camUrl: `http://${hostname}:1880/cam1` // ใส่ URL กล้อง URL นี้มาจาก nodered
     },
     {
       id: 2,
@@ -142,7 +143,7 @@ const Dashboard = () => {
       val: waterData.canal_val,
       position: STATION_POSITIONS.CANAL,
       lastUpdate: waterData.log_time,
-      camUrl: 'http://localhost:1880/cam2'
+      camUrl: `http://${hostname}:1880/cam2`
     }
   ];
 
